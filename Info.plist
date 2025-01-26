@@ -15,6 +15,6 @@
 	<key>CFBundleExecutable</key>
 	<string>VerySeriousSetup</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.greglabs.VerySeriousSetup</string>
+	<string>com.grenlabs.VerySeriousSetup</string>
 </dict>
 </plist>

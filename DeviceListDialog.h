@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -17,9 +17,10 @@
 
 #pragma once
 
-#include <QtGui/QDialog>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QComboBox>
+#include <QtGui>
+#include <QComboBox>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <vector>
 #include <map>
 #include <boost/optional.hpp>

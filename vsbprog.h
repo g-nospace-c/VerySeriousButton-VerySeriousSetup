@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -22,9 +22,7 @@
 #include "hidapi.h"
 #include "keyseq.h"
 #include "bytestring.h"
-
-#define VSB_VENDORID 0x16d0
-#define VSB_PRODID 0x09d2
+#include "vsb_config.h"
 
 namespace VsbMode
 {
@@ -77,7 +75,7 @@ public:
     HidDevice(const std::string& path);
     HidDevice(const HidDeviceInfo &devInfo);
     void sendFeatureReport(uint8_t reportId, const ByteString& data);
-    ByteString getFeatureReport(uint8_t reportId);
+    ByteString getFeatureReport(uint8_t reportId, int maxLen);
     bool isOpen();
     void open();
     void close();

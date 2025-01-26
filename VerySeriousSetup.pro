@@ -1,5 +1,5 @@
 CONFIG += qt resources release
-QT += svg xml
+QT += svg xml widgets core gui
 
 HEADERS += VerySeriousSetup.h
 HEADERS += BigGoButton.h
@@ -20,25 +20,28 @@ SOURCES += keyseq.cpp
 SOURCES += vsbprog.cpp
 SOURCES += main.cpp
 
-LIBS += -lboost_locale-mt
-LIBS += -lboost_regex
 
 RESOURCES += rc/images.qrc
 
-INCLUDEPATH += /usr/include/hidapi
-
-QMAKE_CXXFLAGS += -std=c++11
-
 win32 {
+  LIBS += -lboost_locale-mt
+  LIBS += -lboost_regex-mt
   CONFIG += static
-  QTPLUGIN += qsvg
-  LIBS += -lQtSvg4
+  #LIBS += -L/usr/lib/mxe/usr/x86_64-w64-mingw32.static/qt5/lib/
+  #LIBS += -lQt5Svg
   LIBS += -lhidapi
   LIBS += -lsetupapi
   QMAKE_CXXFLAGS += -static-libstdc++ -static-libgcc
   DEFINES += STATIC
+  INCLUDEPATH += /usr/lib/mxe/usr/x86_64-w64-mingw32.static/include/hidapi
   }
 
-unix:LIBS += -lhidapi-hidraw
+unix {
+  LIBS += -lboost_locale
+  LIBS += -lboost_regex
+  LIBS += -lhidapi-hidraw
+  INCLUDEPATH += /usr/include/hidapi
+  QMAKE_CXXFLAGS += -std=c++20
+  }
 
 TARGET = VerySeriousSetup

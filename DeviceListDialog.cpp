@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -16,11 +16,14 @@
 // along with VerySeriousSetup.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QPushButton>
-#include <QtCore/QVariant>
+#include <QtCore>
+#include <QtGui>
+#include <QComboBox>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QDialogButtonBox>
+#include <QPushButton>
+#include <QVariant>
 #include <boost/foreach.hpp>
 #include "DeviceListDialog.h"
 

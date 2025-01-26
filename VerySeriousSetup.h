@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QIcon>
+#include <QtGui>
+#include <QMainWindow>
 #include <boost/optional.hpp>
 #include "vsbprog.h"
 #include "VsbDeviceSelector.h"
@@ -50,7 +50,7 @@ private:
     boost::optional<HidDeviceInfo> selectedDevice;
     void setSelectedDevice(const HidDeviceInfo& devInfo);
     void unsetSelectedDevice();
-    void showError(std::string info);
+    void showError(std::string summary, std::string msgBoxText);
 private slots:
     void setWhichControlsEnabled(int v);
     void applyNewConfig();

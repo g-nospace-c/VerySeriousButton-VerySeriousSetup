@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -15,12 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with VerySeriousSetup.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifdef STATIC
-#include <QtPlugin>
-Q_IMPORT_PLUGIN(qsvg)
-#endif
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <iostream>
 #include "VerySeriousSetup.h"
 #include "hidapi.h"

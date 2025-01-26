@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include <QtGui/QGroupBox>
-#include <QtGui/QLabel>
-#include <QtGui/QComboBox>
-#include <QtGui/QCheckBox>
+#include <QtGui>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QGroupBox>
 #include "vsbprog.h"
 
 class ModifierKeyGrid

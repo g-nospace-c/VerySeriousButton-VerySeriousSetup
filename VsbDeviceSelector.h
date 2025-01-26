@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -17,11 +17,10 @@
 
 #pragma once
 
-#include <QtGui/QComboBox>
-#include <QtGui/QGroupBox>
-#include <QtGui/QLabel>
-#include <QtGui/QIcon>
-#include <QtGui/QPushButton>
+#include <QtGui>
+#include <QPushButton>
+#include <QLabel>
+#include <QGroupBox>
 #include <vector>
 #include "vsbprog.h"
 

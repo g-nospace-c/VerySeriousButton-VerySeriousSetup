@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -16,9 +16,11 @@
 // along with VerySeriousSetup.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <QtGui/QCheckBox>
-#include <QtCore/QEvent>
-#include <QtGui/QGridLayout>
+#include <QtGui>
+#include <QCheckBox>
+#include <QEvent>
+#include <QGridLayout>
+#include <QLabel>
 #include <utility>
 #include <boost/foreach.hpp>
 #include "SinglekeyOptionsBox.h"

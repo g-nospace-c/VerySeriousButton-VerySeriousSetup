@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -23,25 +23,7 @@
 #include "vsbprog.h"
 #include "hidapi.h"
 
-#define MAX_REPORT_LEN 256
-#define VSB_REPORTID 3
-#define VSB_CMD_GETDEVINFO 1
-#define VSB_CMD_GETCFG 2
-#define VSB_CMD_SETCFG 3
-#define VSB_CMD_SAVECFG 4
-#define VSB_CMD_LOADCFG 5
-#define VSB_CMD_WIPECFG 6
-#define VSB_CMD_READPAGE 7
-#define VSB_CMD_WRITEPAGE 8
-#define VSB_CMD_GETSERIAL 0x11
-#define VSB_RESP_NULL 0
-#define VSB_RESP_OK 1
-#define VSB_RESP_ERR 0x10
-#define VSB_RESP_BADCMD 0x11
-#define VSB_RESP_BADCS 0x12
-#define VSB_RESP_BADMEM 0x14
-#define VSB_RESP_BADIDX 0x18
-#define VSB_RESP_BUSY 0x80
+#define VSB_TRANSFER_SIZE (VSB_FEATREP_SIZE + 1)
 #define NUM_READ_TRIES 16
 
 //TODO: Re-order definitions (so that they match the header) to make maintenance easier
@@ -83,12 +65,9 @@ HidDeviceInfos HidDevice::findDevices(
     devs = hid_enumerate(vendorId, productId);
     for(dev=devs; dev; dev=dev->next)
     {
-//TODO: See if we can find out which HIDAPI implementation is in use, rather than just checking the platform
-#ifdef _WIN32
         if(usagePage && usage)
             if((dev->usage_page != usagePage) || (dev->usage != usage))
                 continue;
-#endif
         std::string devSerialNumber;
         utf16BufferToUtf8String(devSerialNumber, dev->serial_number);
         std::string mfrString;
@@ -129,8 +108,10 @@ void HidDevice::open()
 {
     devHandle = hid_open_path(devPath.c_str());
     if(!devHandle)
-    {
-        throw HidDeviceError("Failed to open device");
+    {   
+        std::string errorString;
+        utf16BufferToUtf8String(errorString, hid_error(devHandle));
+        throw HidDeviceError(errorString);
     }
 }
 
@@ -147,11 +128,11 @@ VsbError::VsbError(const std::string& arg)
     : runtime_error(arg)
 {}
 
-ByteString HidDevice::getFeatureReport(uint8_t reportId)
+ByteString HidDevice::getFeatureReport(uint8_t reportId, int maxLen)
 {
-    uint8_t buf[MAX_REPORT_LEN+1];
+    uint8_t buf[maxLen];
     buf[0] = reportId;
-    int r = hid_get_feature_report(devHandle, buf, sizeof(buf));
+    int r = hid_get_feature_report(devHandle, buf, maxLen);
     if(r<0)
     {
         std::string errorString;
@@ -189,7 +170,7 @@ void VsbDevice::open()
     }
     catch(HidDeviceError err)
     {
-        throw VsbError("Failed to open device!");
+        throw VsbError(std::string("Failed to open device!\t") + err.what());
     }
     info = new VsbInfo(getInfo());
 }
@@ -224,17 +205,17 @@ VsbRawInfo VsbDevice::getRawInfo()
 
 ByteString VsbDevice::doQuery(uint8_t cmdId, ByteString data)
 {
-    ByteString cmdBuf(18, 0);
+    ByteString cmdBuf(VSB_TRANSFER_SIZE, 0);
     cmdBuf[0] = cmdId;
     std::copy(data.begin(), data.end(), cmdBuf.begin()+2);
-    sendFeatureReport(VSB_REPORTID, cmdBuf);
+    sendFeatureReport(VSB_REPORTID_VSB, cmdBuf);
     bool dataOk = false;
     ByteString resp;
     for(int i = 0; i < NUM_READ_TRIES; ++i)
     {
         try
         {
-            resp = getFeatureReport(VSB_REPORTID);
+            resp = getFeatureReport(VSB_REPORTID_VSB, VSB_TRANSFER_SIZE);
         }
         catch(HidDeviceError err)
         {
@@ -248,7 +229,8 @@ ByteString VsbDevice::doQuery(uint8_t cmdId, ByteString data)
             continue; //This also shouldn't happen...
         //FIXME: Implement a proper exception class to use here
         if(resp[0] != cmdId)
-            throw std::runtime_error(boost::str(boost::format("Got the wrong command ID back! (%d)") % (int)resp[1]));
+            throw std::runtime_error(boost::str(boost::format(
+                "Got the wrong command ID back! (%d)") % (int)resp[1]));
         if(resp[1] == VSB_RESP_BUSY)
         {
             //TODO: Insert a small time delay
@@ -441,11 +423,10 @@ VsbInfoAndConfig VsbProg::getInfoAndConfig(const std::string& path)
     dev.open();
     try
     {
-        infoAndConfig =
-        {
+        infoAndConfig.emplace(VsbInfoAndConfig{
             .info = dev.getInfo(),
             .config = dev.getConfig()
-        };
+            });
     }
     catch(...)
     {

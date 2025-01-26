@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -15,8 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with VerySeriousSetup.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QLabel>
+#include <QtGui>
+#include <QVBoxLayout>
+#include <QLabel>
 #include "KeyseqOptionsBox.h"
 
 InvalidKeyseqString::InvalidKeyseqString(const std::string& arg)

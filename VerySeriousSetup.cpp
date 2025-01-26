@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -15,24 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with VerySeriousSetup.  If not, see <http://www.gnu.org/licenses/>.
 
-
-#include <QtGui/QAction>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QPushButton>
-#include <QtGui/QStatusBar>
-#include <QtCore/QTimer>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QMessageBox>
+#include <QtGui>
+#include <QtCore>
+#include <QAction>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QVBoxLayout>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp> 
 #include <string>
+#include <deque>
 #include "VerySeriousSetup.h"
 #include "DeviceListDialog.h"
 #include "vsbprog.h"
+#include "release_ver.h"
 
-const std::string VssMainWindow::swVersion = "0.1 ALPHA";
+const std::string VssMainWindow::swVersion = VSBVSS_RELEASE_VER;
 
 VssMainWindow::VssMainWindow()
     : appIcon(":/images/app_icon.svg")
@@ -55,12 +57,15 @@ VssMainWindow::VssMainWindow()
     QVBoxLayout *layout = new QVBoxLayout(centralWidget());
     setAllControlsLocked(false);
 
-    //TEMP
-    QLabel* alphaWarning = new QLabel("NOTICE: This is a pre-release build");
-    alphaWarning->setStyleSheet("QLabel {font-weight: bold; color: red;}");
-    alphaWarning->setAlignment(Qt::AlignCenter);
-    layout->addWidget(alphaWarning);
-    //TEMP
+    #ifdef RELEASE_WARNING_TEXT
+    const char *releaseWarningText[] = "" RELEASE_WARNING_TEXT;
+    if(strlen(releaseWarningText)) {
+        QLabel* releaseWarning = new QLabel(RELEASE_WARNING_TEXT);
+        releaseWarning->setStyleSheet("QLabel {font-weight: bold; color: red;}");
+        releaseWarning->setAlignment(Qt::AlignCenter);
+        layout->addWidget(releaseWarning);
+    }
+    #endif
 
     layout->addWidget(deviceSelector);
     layout->addWidget(modeSelector);
@@ -96,7 +101,7 @@ void VssMainWindow::showAboutDialog()
     aboutText.append(swVersion.c_str());
     aboutText.append(
         "<br>"
-        "&copy; 2014 Greg Courville <Greg_Courville@GregLabs.com><br>"
+        "&copy; 2014 GC <gc@grenlabs.com><br>"
         "Licensed under the GNU GPL v.3; see LICENSE.txt for details"
     );
     aboutDialog.layout()->addWidget(new QLabel(aboutText, &aboutDialog));
@@ -141,19 +146,26 @@ void VssMainWindow::handleSelectButtonClicked()
             catch(VsbError err)
             {
                 unsetSelectedDevice();
-                showError(std::string(
-                              "Error getting configuration from device: ")
-                          + err.what());
+                showError(
+                    "Error getting configuration from device!",
+                    std::string("Error getting configuration from device: ") + err.what()
+                    );
             }
         }
     }
     setAllControlsLocked(false);
 }
 
-void VssMainWindow::showError(std::string info)
+void VssMainWindow::showError(std::string summary, std::string msgBoxText)
 {
-    QMessageBox::warning(this, "Error", info.c_str());
-    statusBar()->showMessage(QString("ERROR: ") + info.c_str());
+    std::deque<std::string> pieces;
+    boost::split(pieces, msgBoxText, boost::is_any_of("\t"));
+    std::string msgBoxHtml(std::string("<b>") + pieces.front() + "</b>");
+    pieces.pop_front();
+    if (!pieces.empty())
+        msgBoxHtml += std::string("<br>") + pieces.front();
+    QMessageBox::warning(this, "Error", msgBoxHtml.c_str());
+    statusBar()->showMessage(QString("ERROR: ") + summary.c_str());
 }
 
 void VssMainWindow::unsetSelectedDevice()
@@ -272,8 +284,10 @@ void VssMainWindow::applyNewConfig()
             }
             catch(InvalidKeyseqString err)
             {
-                showError(std::string("There's a problem with the key sequence you entered: ") + err.what());
-                statusBar()->showMessage("Aborted due to invalid input.");
+                showError(
+                    std::string("Invalid key sequence."),
+                    std::string("There's a problem with the key sequence you entered:\t") + err.what()
+                    );
                 badInput = true;
             }
             break;
@@ -281,7 +295,10 @@ void VssMainWindow::applyNewConfig()
     }
     catch(VsbError err)
     {
-        showError(std::string("Failed to send new configuration to device: ") + err.what());
+        showError(
+            std::string("Failed to send configuration!"),
+            std::string("Failed to send new configuration to device:\n") + err.what()
+            );
     }
     if(success)
     {
@@ -294,7 +311,7 @@ void VssMainWindow::applyNewConfig()
 void VssMainWindow::autoSelectDevice()
 {
     HidDeviceInfos devInfos = VsbDevice::findDevices();
-    for(int i = 0; i < devInfos.size(); ++i)
+    for(ssize_t i = 0; i < devInfos.size(); ++i)
     {
         try
         {

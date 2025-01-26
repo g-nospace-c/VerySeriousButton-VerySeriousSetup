@@ -1,0 +1,1 @@
+#define VSBVSS_RELEASE_VER "0.2.1"

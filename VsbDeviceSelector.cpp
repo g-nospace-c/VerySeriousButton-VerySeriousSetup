@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -16,10 +16,11 @@
 // along with VerySeriousSetup.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <QtGui/QPushButton>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QGridLayout>
-#include <QtGui/QDesktopWidget>
+#include <QtGui>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QDesktopWidget>
 #include <boost/foreach.hpp>
 #include <boost/format/format_fwd.hpp>
 #include "VsbDeviceSelector.h"

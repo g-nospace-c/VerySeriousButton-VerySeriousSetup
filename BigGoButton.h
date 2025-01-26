@@ -1,4 +1,4 @@
-// © 2014 Greg Courville <Greg_Courville@GregLabs.com>
+// © 2014 GC <gc@grenlabs.com>
 // 
 // This file is part of VerySeriousSetup.
 // 
@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <QtGui/QIcon>
-#include <QtGui/QWidget>
+#include <QtGui>
+#include <QWidget>
 
 class BigGoButton
     : public QWidget
